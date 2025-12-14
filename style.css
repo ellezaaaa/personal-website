@@ -113,38 +113,66 @@ body {
 
 /* --- NAV (Vertical Layout) --- */
 nav {
-    position: fixed; top: 0; left: 0; height: 100vh; width: 80px;
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    height: 100vh; 
+    width: 80px;
+    
     display: flex; 
     flex-direction: column; 
-    /* 修改 1: 稍微减少 Logo 和菜单之间的距离，防止把菜单挤出屏幕 */
     justify-content: flex-start; 
-    gap: 4vh; 
+    
+    /* 修改 1: 压缩间距，从 4vh 改为 2vh，给内容腾地方 */
+    gap: 2vh; 
     
     align-items: center;
-    padding: 2rem 0; 
+    
+    /* 修改 2: 减小上下 Padding，从 2rem 改为 1.5rem */
+    padding: 1.5rem 0; 
+    
     z-index: 100; 
     border-right: 1px solid rgba(0,0,0,0.05);
-    background: rgba(253, 251, 247, 0.8); 
+    background: rgba(253, 251, 247, 0.95); /* 稍微增加不透明度 */
     backdrop-filter: blur(5px);
     
-    /* 修改 2: 防止屏幕过矮时内容被截断，允许滚动但隐藏滚动条 */
-    overflow-y: auto;
-    scrollbar-width: none; /* Firefox 隐藏滚动条 */
+    /* 修改 3: 允许滚动，但不要隐藏滚动条，而是自定义它 */
+    overflow-y: auto; 
+    overflow-x: hidden; /* 防止横向出现滚动条 */
 }
-nav::-webkit-scrollbar { display: none; /* Chrome/Safari 隐藏滚动条 */ }
+
+/* --- 自定义 Nav 滚动条 (Cyberpunk Style) --- */
+/* 这会让滚动条变成一条极细的线，既能提示你可以滚动，又不丑 */
+nav::-webkit-scrollbar {
+    width: 2px; /* 极细 */
+}
+nav::-webkit-scrollbar-track {
+    background: transparent; 
+}
+nav::-webkit-scrollbar-thumb {
+    background: #000; /* 黑色滑块 */
+    border-radius: 2px;
+}
+/* 鼠标放上去时变粗一点点 */
+nav:hover::-webkit-scrollbar-thumb {
+    background: var(--text-pink); /* 或者你的主题色 */
+}
 
 .logo-box {
-    flex-shrink: 0; /* 防止 Logo 被压缩 */
+    flex-shrink: 0; /* 铁律：Logo 永远不能被压缩 */
+    margin-bottom: 1rem; /* 给 Logo 单独加一点下边距 */
 }
 
 .menu-vertical { 
     display: flex; 
     flex-direction: column; 
-    /* 修改 3: 稍微缩小菜单项之间的间距 */
-    gap: 2rem; 
+    /* 修改 4: 压缩菜单项之间的间距，从 2rem 改为 1.5rem */
+    gap: 1.5rem; 
     width: 100%;
     align-items: center;
-    padding-bottom: 2rem; /* 底部留白 */
+    
+    /* 修改 5: 增加底部安全距离，确保最后一个菜单项能被滚出来，不贴边 */
+    padding-bottom: 100px; 
 }
 
 .menu-vertical a { 
@@ -158,11 +186,12 @@ nav::-webkit-scrollbar { display: none; /* Chrome/Safari 隐藏滚动条 */ }
     /* 竖排模式 */
     writing-mode: vertical-rl;
     text-orientation: mixed;
-    
-    /* 修改 4: 强制不换行，防止文字左右被裁切 */
     white-space: nowrap;
     
     padding: 5px; 
+    
+    /* 修改 6: 防止文字过长导致点击区域错位 */
+    max-height: 300px; 
 }
 
 .menu-vertical a:hover { 
@@ -171,7 +200,7 @@ nav::-webkit-scrollbar { display: none; /* Chrome/Safari 隐藏滚动条 */ }
 }
 
 .menu-vertical .pixel-font { 
-    font-size: 1rem; 
+    font-size: 0.9rem; /* 稍微调小字体，节省空间 */
     margin-bottom: 2px; 
 }
 
