@@ -1,0 +1,383 @@
+/* =========================================
+   1. VARIABLES & RESET
+   ========================================= */
+
+@font-face {
+    font-family: 'Huiwen Mingchao';
+    src: url('Huiwen.ttf') format('truetype');
+    font-weight: normal; font-style: normal; font-display: swap;
+}
+
+:root {
+    --bg: #fdfbf7;
+    --text: #1a1a1a;
+    
+    --pink: #ff66c4;
+    --green: #d4ff00; 
+    --text-pink: #e600a4;
+    --text-green: #8ca600; 
+    
+    /* Font Definitions */
+    --font-serif: 'Playfair Display', serif; /* 纯英文衬线 */
+    --font-cn: 'Noto Serif SC', serif;           /* 正文宋体 */
+    --font-art-cn: 'Huiwen Mingchao', serif;     /* 艺术汇文 */
+    --font-pixel: 'VT323', monospace;
+    
+    /* 【关键混合字体栈】: 英文优先用Playfair，中文自动回退到汇文 */
+    --font-mix: 'Playfair Display', 'Huiwen Mingchao', serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    background-color: var(--bg);
+    color: var(--text);
+    overflow-x: hidden;
+    line-height: 1.6;
+    /* 默认正文：英文Playfair + 中文宋体 */
+    font-family: 'Playfair Display', 'Noto Serif SC', serif; 
+}
+
+/* =========================================
+   2. TYPOGRAPHY CLASSES
+   ========================================= */
+
+.serif { font-family: var(--font-serif); }
+.serif-cn { font-family: var(--font-cn); font-weight: 300; }
+.pixel-font { font-family: var(--font-pixel); font-size: 1.2rem; letter-spacing: 1px; }
+
+/* 混合字体类：用于标题、目录、诗句 */
+.mix-font, .mix-title, .huiwen-menu, .huiwen-intro {
+    font-family: var(--font-mix);
+}
+
+/* 竖排文字 */
+.vertical-text {
+    /* 竖排也使用混合字体 */
+    font-family: var(--font-mix); 
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    letter-spacing: 5px;
+    line-height: 1.5;
+}
+
+/* Hero Intro 特殊样式 */
+.huiwen-intro {
+    font-family: var(--font-art-cn); /* 强制汇文 */
+    font-size: 1.25rem;
+    line-height: 2;
+    margin-bottom: 1rem;
+    color: #333;
+}
+.sub-intro {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 2rem;
+    font-style: italic;
+}
+
+/* Menu 特殊样式 */
+.huiwen-menu {
+    font-family: var(--font-mix);
+    font-weight: 400;
+}
+
+/* Title 特殊样式 */
+.mix-title {
+    font-family: var(--font-mix);
+    font-weight: 400; /* 汇文不建议加粗，保持清秀 */
+    line-height: 1.3;
+}
+
+/* Neon Colors */
+.neon-pink { color: var(--text-pink); text-shadow: 0 0 10px rgba(255, 102, 196, 0.3); }
+.neon-green { color: var(--text-green); text-shadow: 0 0 10px rgba(212, 255, 0, 0.5); }
+
+/* Bilingual Desc */
+.bilingual-desc .en { margin-bottom: 0.3rem; color: #111; font-family: var(--font-serif); }
+.bilingual-desc .cn { color: #555; font-size: 0.95em; }
+
+/* =========================================
+   3. ATMOSPHERE
+   ========================================= */
+.noise-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 99; pointer-events: none; opacity: 0.1;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+.dream-blobs { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; filter: blur(80px); opacity: 0.6; }
+.blob { position: absolute; border-radius: 50%; mix-blend-mode: multiply; }
+.pink-blob { width: 500px; height: 500px; background: var(--pink); top: -100px; right: -100px; animation: float 10s infinite alternate; }
+.green-blob { width: 400px; height: 400px; background: var(--green); bottom: -50px; left: -50px; animation: float 12s infinite alternate-reverse; }
+@keyframes float { from { transform: translate(0,0); } to { transform: translate(30px, 50px); } }
+
+/* --- NAV (Vertical Layout) --- */
+nav {
+    position: fixed; top: 0; left: 0; height: 100vh; width: 80px;
+    display: flex; 
+    flex-direction: column; 
+    /* 修改 1: 稍微减少 Logo 和菜单之间的距离，防止把菜单挤出屏幕 */
+    justify-content: flex-start; 
+    gap: 4vh; 
+    
+    align-items: center;
+    padding: 2rem 0; 
+    z-index: 100; 
+    border-right: 1px solid rgba(0,0,0,0.05);
+    background: rgba(253, 251, 247, 0.8); 
+    backdrop-filter: blur(5px);
+    
+    /* 修改 2: 防止屏幕过矮时内容被截断，允许滚动但隐藏滚动条 */
+    overflow-y: auto;
+    scrollbar-width: none; /* Firefox 隐藏滚动条 */
+}
+nav::-webkit-scrollbar { display: none; /* Chrome/Safari 隐藏滚动条 */ }
+
+.logo-box {
+    flex-shrink: 0; /* 防止 Logo 被压缩 */
+}
+
+.menu-vertical { 
+    display: flex; 
+    flex-direction: column; 
+    /* 修改 3: 稍微缩小菜单项之间的间距 */
+    gap: 2rem; 
+    width: 100%;
+    align-items: center;
+    padding-bottom: 2rem; /* 底部留白 */
+}
+
+.menu-vertical a { 
+    text-decoration: none; 
+    color: var(--text); 
+    transition: 0.3s; 
+    display: flex; 
+    align-items: center; 
+    gap: 8px;
+    
+    /* 竖排模式 */
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    
+    /* 修改 4: 强制不换行，防止文字左右被裁切 */
+    white-space: nowrap;
+    
+    padding: 5px; 
+}
+
+.menu-vertical a:hover { 
+    color: var(--text-pink); 
+    transform: translateY(-3px); 
+}
+
+.menu-vertical .pixel-font { 
+    font-size: 1rem; 
+    margin-bottom: 2px; 
+}
+
+/* =========================================
+   5. HERO
+   ========================================= */
+header { min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 0 10%; position: relative; }
+.hero-container { display: flex; align-items: center; width: 100%; justify-content: space-between; }
+.decor-text-left, .decor-text-right { font-size: 1rem; color: #999; height: 350px; opacity: 0.7; }
+.hero-center { text-align: center; z-index: 2; }
+.main-title { font-size: 5vw; line-height: 1; margin-bottom: 2rem; letter-spacing: -2px; }
+.glass-card { background: rgba(255,255,255,0.4); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.8); padding: 2.5rem 2rem; max-width: 550px; margin: 0 auto; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+.tag-row { margin-top: 1rem; display: flex; justify-content: center; gap: 10px; }
+.pixel-tag { background: #000; color: #fff; font-family: var(--font-pixel); padding: 2px 8px; font-size: 1rem; }
+
+/* =========================================
+   6. SECTIONS
+   ========================================= */
+section { padding: 8rem 15%; }
+.section-title { margin-bottom: 4rem; display: flex; align-items: baseline; gap: 20px; border-bottom: 2px solid var(--text); padding-bottom: 10px; }
+.section-title h2 { font-size: 3rem; }
+
+/* =========================================
+   7. SELECTED WORKS
+   ========================================= */
+.gallery-scroll { display: flex; flex-direction: column; gap: 8rem; }
+.art-card { display: flex; align-items: center; gap: 4rem; }
+.art-card.reverse { flex-direction: row-reverse; }
+.visual-layer { position: relative; flex: 1.2; }
+.main-img { width: 100%; display: block; border: 1px solid #000; position: relative; z-index: 2; transition: transform 0.3s; }
+.glitch-layer { position: absolute; top: 15px; left: 15px; width: 100%; height: 100%; z-index: 1; transition: transform 0.3s; }
+.pink-glitch { background: var(--pink); }
+.green-glitch { background: var(--green); }
+.art-card:hover .main-img { transform: translate(-5px, -5px); }
+.art-card:hover .glitch-layer { transform: translate(5px, 5px); }
+.text-layer { flex: 1; }
+.text-layer h3 { font-size: 2.2rem; margin: 0.5rem 0 1.5rem 0; }
+
+/* =========================================
+   8. ARCHIVE GALLERY
+   ========================================= */
+.archive-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 2rem; }
+.archive-item { position: relative; border: 1px solid var(--text); overflow: hidden; cursor: pointer; background: #fff; }
+/* 修改前是 filter: grayscale(100%); 现在改为 none */
+.archive-item img { 
+    width: 100%; 
+    height: 250px; 
+    object-fit: cover; 
+    display: block; 
+    transition: transform 0.5s; 
+    filter: none; /* 【关键修改】去掉了黑白滤镜，直接显示原色 */
+}
+
+/* 悬停时只做放大效果，不需要变色了 */
+.archive-item:hover img { 
+    transform: scale(1.05); 
+}
+.archive-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; transition: 0.3s; display: flex; justify-content: center; align-items: center; }
+.pink-overlay { background: rgba(255, 102, 196, 0.8); }
+.green-overlay { background: rgba(212, 255, 0, 0.8); }
+.archive-item:hover .archive-overlay { opacity: 1; }
+.archive-overlay span { background: var(--text); color: var(--bg); padding: 5px 10px; }
+
+/* =========================================
+   9. EXPERIENCE (System Logs)
+   ========================================= */
+.system-log-list { border-top: 1px solid var(--text); margin-top: 2rem; }
+.log-row { display: grid; grid-template-columns: 1fr 2fr 3fr; padding: 2.5rem 1rem; border-bottom: 1px solid #ddd; align-items: baseline; transition: background 0.3s ease; }
+.log-row:hover { background: rgba(255,255,255,0.8); }
+.highlight-row { background: rgba(255, 102, 196, 0.05); border-left: 3px solid var(--pink); }
+.log-meta { color: #999; }
+.log-main h4 { font-size: 1.5rem; font-weight: 400; margin-bottom: 0.5rem; }
+.role-badge { font-family: var(--font-pixel); font-size: 0.9rem; padding: 2px 6px; border: 1px solid var(--text); display: inline-block; }
+.pink-badge { color: var(--text-pink); border-color: var(--text-pink); }
+.green-badge { color: var(--text-green); border-color: var(--text-green); }
+
+/* =========================================
+   10. FOOTER & MOBILE
+   ========================================= */
+footer { padding: 5rem 10%; text-align: center; border-top: 1px solid #000; }
+footer h2 { font-size: 4rem; margin-bottom: 1rem; }
+.links a { font-size: 1.5rem; text-decoration: none; margin: 0 1rem; }
+.copyright { margin-top: 3rem; color: #888; font-size: 0.9rem; }
+
+@media (max-width: 768px) {
+    nav { width: 100%; height: auto; flex-direction: row; padding: 1rem; border-right: none; border-bottom: 1px solid #ddd; }
+    .menu-vertical { display: none; }
+    header { padding: 4rem 5%; }
+    .decor-text-left, .decor-text-right { display: none; }
+    .art-card, .art-card.reverse { flex-direction: column; gap: 2rem; }
+    section { padding: 4rem 5%; }
+    .main-title { font-size: 12vw; }
+    .archive-grid { grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .log-row { grid-template-columns: 1fr; gap: 1rem; }
+    .log-meta { display: none; }
+}
+
+/* --- SUB CATEGORY HEADERS --- */
+
+/* 子标题容器 */
+.sub-header {
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* 装饰线条 */
+.sub-line {
+    flex-grow: 1; /* 让线条填满剩余空间 */
+    height: 1px;
+    opacity: 0.5;
+}
+
+.green-line { background-color: var(--text-green); }
+.pink-line { background-color: var(--text-pink); }
+
+/* 两个板块之间的间距 */
+.spacer-block {
+    height: 6rem; /* 增加两个分类之间的呼吸感 */
+}
+
+/* =========================================
+   11. LIGHTBOX (大图查看器)
+   ========================================= */
+.lightbox {
+    display: none; /* 默认隐藏 */
+    position: fixed;
+    z-index: 9999; /* 保证在最上层 */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.9); /* 深色背景 */
+    backdrop-filter: blur(5px); /* 磨砂玻璃效果 */
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.lightbox-content {
+    margin: auto;
+    display: block;
+    max-width: 90%;
+    max-height: 80vh;
+    border: 2px solid var(--pink); /* 赛博绿边框 */
+    box-shadow: 0 0 30px var(--pink); /* 发光效果 */
+    animation: zoomIn 0.3s;
+}
+
+.lightbox-caption {
+    margin-top: 15px;
+    color: var(--pink);
+    font-family: var(--font-pixel);
+    font-size: 1.5rem;
+    text-align: center;
+    text-shadow: 0 0 10px var(--pink);
+}
+
+.close-btn {
+    position: absolute;
+    top: 30px;
+    right: 50px;
+    color: #f1f1f1;
+    font-size: 50px;
+    font-weight: bold;
+    transition: 0.3s;
+    cursor: pointer;
+    font-family: sans-serif;
+    z-index: 10000;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+    color: var(--green);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+@keyframes zoomIn {
+    from {transform:scale(0)} 
+    to {transform:scale(1)}
+}
+
+/* 手机适配 */
+@media only screen and (max-width: 700px){
+    .lightbox-content {
+        width: 100%;
+    }
+}
+
+/* =========================================
+   FIX: 白底下的中文粗体 (Ink Style)
+   ========================================= */
+
+.serif-cn b, 
+.serif-cn strong {
+    font-family: 'Noto Serif SC', serif;
+    font-weight: 700 !important;  /* 强制加粗 */
+    color: #000000 !important;    /* 【关键】纯黑色，像打印出来的墨迹 */
+    
+    /* 可选：给重点文字加一个“荧光笔”背景，很像剧本批注 */
+    /* 想要粉色高亮就把下面这行注释取消掉： */
+    /* background-color: rgba(255, 0, 100, 0.1); */
+    
+    /* 可选：加一点字间距，让粗体更透气 */
+    letter-spacing: 0.5px;
+}
